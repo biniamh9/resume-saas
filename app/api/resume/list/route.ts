@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function POST(req: Request) {
+export async function GET() {
 try {
 const supabase = await createClient();
 
@@ -14,25 +14,17 @@ if (userErr || !user) {
 return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
 
-const body = await req.json().catch(() => ({}));
-const title = body?.title?.trim() || "Untitled Resume";
-const content = body?.content ?? {};
-
 const { data, error } = await supabase
 .from("resumes")
-.insert({
-user_id: user.id,
-title,
-content,
-})
-.select()
-.single();
+.select("*")
+.eq("user_id", user.id)
+.order("updated_at", { ascending: false });
 
 if (error) {
 return NextResponse.json({ error: error.message }, { status: 400 });
 }
 
-return NextResponse.json({ resume: data }, { status: 201 });
+return NextResponse.json({ resumes: data ?? [] });
 } catch (e: any) {
 return NextResponse.json({ error: e.message ?? "Server error" }, { status: 500 });
 }
