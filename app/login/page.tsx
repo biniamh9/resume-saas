@@ -12,16 +12,19 @@ const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const [loading, setLoading] = useState(false);
 const [msg, setMsg] = useState("");
-const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-console.log("LOGIN data:", data);
-console.log("LOGIN error:", error);
 
-const onSubmit = async (e: React.FormEvent) => {
+async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
 e.preventDefault();
 setLoading(true);
 setMsg("");
 
-const { error } = await supabase.auth.signInWithPassword({ email, password });
+const { data, error } = await supabase.auth.signInWithPassword({
+email,
+password,
+});
+
+console.log("LOGIN data:", data);
+console.log("LOGIN error:", error);
 
 if (error) {
 setMsg(error.message);
@@ -30,14 +33,16 @@ return;
 }
 
 router.push("/dashboard");
-};
+router.refresh();
+}
 
 return (
-<main className="mx-auto max-w-md p-8">
-<h1 className="text-2xl font-bold">Login</h1>
-<form onSubmit={onSubmit} className="mt-6 space-y-3">
+<main className="p-6 max-w-md mx-auto">
+<h1 className="text-2xl font-semibold mb-4">Login</h1>
+
+<form onSubmit={handleLogin} className="space-y-3">
 <input
-className="w-full rounded border p-2"
+className="w-full border rounded p-2"
 type="email"
 placeholder="Email"
 value={email}
@@ -45,7 +50,7 @@ onChange={(e) => setEmail(e.target.value)}
 required
 />
 <input
-className="w-full rounded border p-2"
+className="w-full border rounded p-2"
 type="password"
 placeholder="Password"
 value={password}
@@ -53,13 +58,15 @@ onChange={(e) => setPassword(e.target.value)}
 required
 />
 <button
-className="w-full rounded bg-black p-2 text-white disabled:opacity-50"
+className="w-full border rounded p-2"
+type="submit"
 disabled={loading}
 >
-{loading ? "Signing in..." : "Sign in"}
+{loading ? "Logging in..." : "Login"}
 </button>
 </form>
-{msg && <p className="mt-3 text-sm">{msg}</p>}
+
+{msg ? <p className="mt-3 text-sm text-red-600">{msg}</p> : null}
 </main>
 );
 }
