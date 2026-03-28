@@ -12,6 +12,9 @@ const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const [loading, setLoading] = useState(false);
 const [msg, setMsg] = useState("");
+const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+console.log("LOGIN data:", data);
+console.log("LOGIN error:", error);
 
 const onSubmit = async (e: React.FormEvent) => {
 e.preventDefault();
